@@ -30,8 +30,7 @@ class QuestionController extends Controller
             foreach ($options as $key => &$option) {
                 $option['is_correct'] = ($key == $correctIndex);
             }
-            // re-index options just in case, though createMany handles assoc arrays fine usually?
-            // createMany expects array of arrays.
+            
             $question->options()->createMany($options);
         }
 
