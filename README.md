@@ -149,7 +149,7 @@ Update your `.env` file to point to the Docker database service. **Note:** You m
 
 ```env
 DB_CONNECTION=mysql
-DB_HOST=mysql
+DB_HOST=exam-online-mysql
 DB_PORT=3306
 DB_DATABASE=yp_exam_portal
 DB_USERNAME=root
