@@ -136,3 +136,55 @@ The `DatabaseSeeder` creates the following default accounts for testing:
 4. Answer questions within the time limit.
 5. Click **Submit** or wait for timer to zero out.
 6. View Results.
+
+---
+
+## 🐳 Docker Setup
+
+If you prefer using Docker, follow these steps to run the application in a containerized environment.
+
+### 1. Configure Environment
+
+Update your `.env` file to point to the Docker database service. **Note:** You might want to create a `.env.docker` file or modify `.env` temporarily.
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=yp_exam_portal
+DB_USERNAME=root
+DB_PASSWORD=your_password  # Ensure this matches docker-compose.yml (default is empty in your file if using specific vars)
+```
+
+### 2. Start Services
+
+Run the following command to build and start the containers:
+
+```bash
+docker-compose up -d --build
+```
+
+### 3. Install Dependencies
+
+Since the code is mounted as a volume, you need to install dependencies inside the container:
+
+```bash
+# Install PHP dependencies
+docker-compose exec exam-online-system composer install
+
+# Install Node dependencies and build assets
+docker-compose exec exam-online-system npm install
+docker-compose exec exam-online-system npm run build
+```
+
+### 4. Setup Database
+
+Run the migrations and seeders inside the container:
+
+```bash
+docker-compose exec exam-online-system php artisan migrate:fresh --seed
+```
+
+### 5. Access Application
+
+The application will be available at: **http://localhost:8001**
