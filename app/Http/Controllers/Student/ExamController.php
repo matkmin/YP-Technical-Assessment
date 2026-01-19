@@ -10,18 +10,15 @@ use App\Models\Exam;
 
 class ExamController extends Controller
 {
-    public function show(\App\Models\Exam $exam)
+    public function show(Exam $exam)
     {
-        // 1. Check Access
         $user = auth()->user();
         if (!$user->classes()->whereHas('exams', fn($q) => $q->where('exams.id', $exam->id))->exists()) {
             abort(403, 'You are not assigned to this exam.');
         }
 
-        // 2. Check Attempt
         $attempt = $exam->attempts()->where('user_id', $user->id)->first();
 
-        // 3. Logic
         if (!$attempt) {
             // Not started -> Show Start Page
             return view('student.exams.start', compact('exam'));
@@ -34,14 +31,13 @@ class ExamController extends Controller
         }
 
         // In Progress -> Show Questions (Resume)
-        // Check time remaining
         $startTime = $attempt->started_at;
         $endTime = $startTime->copy()->addMinutes($exam->duration_minutes);
 
         if (now()->greaterThan($endTime)) {
             // Time expired, auto-submit (mark completed)
             $attempt->update(['completed_at' => now()]);
-            // Redirect to result with message/score
+
             return redirect()->route('student.exams.show', $exam->id)->with('info', 'Time expired.');
         }
 
@@ -51,16 +47,14 @@ class ExamController extends Controller
         return view('student.exams.show', compact('exam', 'attempt', 'remainingSeconds'));
     }
 
-    public function start(\App\Models\Exam $exam)
+    public function start(Exam $exam)
     {
         $user = auth()->user();
 
-        // Double check access
         if (!$user->classes()->whereHas('exams', fn($q) => $q->where('exams.id', $exam->id))->exists()) {
             abort(403, 'Unauthorized.');
         }
 
-        // Check if already attempted
         if ($exam->attempts()->where('user_id', $user->id)->exists()) {
             return redirect()->route('student.exams.show', $exam->id);
         }
