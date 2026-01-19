@@ -39,9 +39,9 @@ class ExamController extends Controller
         return view('lecturer.exams.create', compact('subjects'));
     }
 
-    public function store(StoreExamRequest $request): RedirectResponse
+    public function store(StoreExamRequest $req): RedirectResponse
     {
-        $this->exams->create($request->validated());
+        $this->exams->create($req->validated());
 
         return redirect()
             ->route('lecturer.exams.index')
@@ -69,9 +69,9 @@ class ExamController extends Controller
         return view('lecturer.exams.edit', compact('exam', 'subjects'));
     }
 
-    public function update(UpdateExamRequest $request, Exam $exam): RedirectResponse
+    public function update(UpdateExamRequest $req, Exam $exam): RedirectResponse
     {
-        $exam->update($request->validated());
+        $exam->update($req->validated());
 
         return redirect()
             ->route('lecturer.exams.index')
@@ -87,9 +87,9 @@ class ExamController extends Controller
             ->with('success', 'Exam deleted successfully.');
     }
 
-    public function attachClass(AttachClassRequest $request, Exam $exam): RedirectResponse
+    public function attachClass(AttachClassRequest $req, Exam $exam): RedirectResponse
     {
-        $exam->classes()->attach($request->class_id);
+        $exam->classes()->attach($req->class_id);
 
         return back()->with('success', 'Exam assigned to class.');
     }

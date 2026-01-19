@@ -23,9 +23,9 @@ class SubjectController extends Controller
         return view('lecturer.subjects.create');
     }
 
-    public function store(StoreSubjectRequest $request): RedirectResponse
+    public function store(StoreSubjectRequest $req): RedirectResponse
     {
-        Subject::create($request->validated());
+        Subject::create($req->validated());
 
         return redirect()
             ->route('lecturer.subjects.index')
@@ -38,10 +38,10 @@ class SubjectController extends Controller
     }
 
     public function update(
-        UpdateSubjectRequest $request,
+        UpdateSubjectRequest $req,
         Subject $subject
     ): RedirectResponse {
-        $subject->update($request->validated());
+        $subject->update($req->validated());
 
         return redirect()
             ->route('lecturer.subjects.index')

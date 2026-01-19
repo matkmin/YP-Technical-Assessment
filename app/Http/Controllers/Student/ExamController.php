@@ -67,13 +67,13 @@ class ExamController extends Controller
         return redirect()->route('student.exams.show', $exam->id);
     }
 
-    public function submit(SubmitExamRequest $request, Exam $exam, ExamSubmissionService $submissionService)
+    public function submit(SubmitExamRequest $req, Exam $exam, ExamSubmissionService $submissionService)
     {
         $user = auth()->user();
         $attempt = $exam->attempts()->where('user_id', $user->id)->whereNull('completed_at')->firstOrFail();
 
         try {
-            $submissionService->submit($exam, $attempt, $request->input('answers', []));
+            $submissionService->submit($exam, $attempt, $req->input('answers', []));
             return redirect()->route('student.exams.show', $exam->id)->with('success', 'Exam submitted successfully.');
         } catch (\Exception $e) {
             return redirect()->route('student.exams.show', $exam->id)->with('error', $e->getMessage());

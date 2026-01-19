@@ -27,9 +27,9 @@ class SchoolClassController extends Controller
         return view('lecturer.classes.create');
     }
 
-    public function store(StoreSchoolClassRequest $request): RedirectResponse
+    public function store(StoreSchoolClassRequest $req): RedirectResponse
     {
-        SchoolClass::create($request->validated());
+        SchoolClass::create($req->validated());
 
         return redirect()
             ->route('lecturer.classes.index')
@@ -61,10 +61,10 @@ class SchoolClassController extends Controller
     }
 
     public function update(
-        UpdateSchoolClassRequest $request,
+        UpdateSchoolClassRequest $req,
         SchoolClass $class
     ): RedirectResponse {
-        $class->update($request->validated());
+        $class->update($req->validated());
 
         return redirect()
             ->route('lecturer.classes.index')
@@ -81,10 +81,10 @@ class SchoolClassController extends Controller
     }
 
     public function attachStudent(
-        AttachStudentRequest $request,
+        AttachStudentRequest $req,
         SchoolClass $class
     ): RedirectResponse {
-        $class->students()->attach($request->user_id);
+        $class->students()->attach($req->user_id);
 
         return back()->with('success', 'Student assigned to class.');
     }
@@ -99,10 +99,10 @@ class SchoolClassController extends Controller
     }
 
     public function attachSubject(
-        AttachSubjectRequest $request,
+        AttachSubjectRequest $req,
         SchoolClass $class
     ): RedirectResponse {
-        $class->subjects()->attach($request->subject_id);
+        $class->subjects()->attach($req->subject_id);
 
         return back()->with('success', 'Subject assigned to class.');
     }

@@ -17,15 +17,15 @@ class QuestionController extends Controller
         return view('lecturer.questions.create', compact('exam'));
     }
 
-    public function store(StoreQuestionRequest $request, Exam $exam): RedirectResponse
+    public function store(StoreQuestionRequest $req, Exam $exam): RedirectResponse
     {
         $question = $exam->questions()->create(
-            $request->only(['question_text', 'type', 'points'])
+            $req->only(['question_text', 'type', 'points'])
         );
 
-        if ($request->type === 'multiple_choice') {
-            $options = $request->options;
-            $correctIndex = $request->input('correct_option');
+        if ($req->type === 'multiple_choice') {
+            $options = $req->options;
+            $correctIndex = $req->input('correct_option');
 
             foreach ($options as $key => &$option) {
                 $option['is_correct'] = ($key == $correctIndex);
@@ -46,17 +46,17 @@ class QuestionController extends Controller
         return view('lecturer.questions.edit', compact('question'));
     }
 
-    public function update(UpdateQuestionRequest $request, Question $question): RedirectResponse
+    public function update(UpdateQuestionRequest $req, Question $question): RedirectResponse
     {
         $question->update(
-            $request->only(['question_text', 'type', 'points'])
+            $req->only(['question_text', 'type', 'points'])
         );
 
         $question->options()->delete();
 
-        if ($request->type === 'multiple_choice' && $request->filled('options')) {
-            $options = $request->options;
-            $correctIndex = $request->input('correct_option');
+        if ($req->type === 'multiple_choice' && $req->filled('options')) {
+            $options = $req->options;
+            $correctIndex = $req->input('correct_option');
 
             foreach ($options as $key => &$option) {
                 $option['is_correct'] = ($key == $correctIndex);
