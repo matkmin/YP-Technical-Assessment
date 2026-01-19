@@ -8,7 +8,8 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100" x-data="{ type: '{{ $question->type }}' }">
+                <div class="p-6 text-gray-900 dark:text-gray-100"
+                    x-data="{ type: '{{ old('type', $question->type) }}' }">
                     <form action="{{ route('lecturer.questions.update', $question->id) }}" method="POST">
                         @csrf
                         @method('PUT')
@@ -52,12 +53,14 @@
                                             class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" {{ $option->is_correct ? 'checked' : '' }}
                                             onclick="document.querySelectorAll('.is-correct-hidden').forEach(el => el.value = 0); document.getElementById('is_correct_{{ $i }}').value = 1;">
                                         <input type="hidden" name="options[{{ $i }}][is_correct]" id="is_correct_{{ $i }}"
-                                            class="is-correct-hidden" value="{{ $option->is_correct ? 1 : 0 }}">
+                                            class="is-correct-hidden" value="{{ $option->is_correct ? 1 : 0 }}"
+                                            :disabled="type !== 'multiple_choice'">
 
                                         <input type="text" name="options[{{ $i }}][option_text]"
                                             value="{{ $option->option_text }}"
                                             class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full"
-                                            required>
+                                            :required="type === 'multiple_choice'"
+                                            :disabled="type !== 'multiple_choice'">
                                     </div>
                                 @endforeach
                                 <!-- Add simple implementation for ensuring 4 slots if less -->
@@ -67,11 +70,13 @@
                                             class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300"
                                             onclick="document.querySelectorAll('.is-correct-hidden').forEach(el => el.value = 0); document.getElementById('is_correct_{{ $i }}').value = 1;">
                                         <input type="hidden" name="options[{{ $i }}][is_correct]" id="is_correct_{{ $i }}"
-                                            class="is-correct-hidden" value="0">
+                                            class="is-correct-hidden" value="0" :disabled="type !== 'multiple_choice'">
 
                                         <input type="text" name="options[{{ $i }}][option_text]"
                                             placeholder="Option {{ $i + 1 }}"
-                                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full">
+                                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full"
+                                            :required="type === 'multiple_choice'"
+                                            :disabled="type !== 'multiple_choice'">
                                     </div>
                                 @endfor
                             @else
@@ -82,11 +87,13 @@
                                             class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" {{ $i == 0 ? 'checked' : '' }}
                                             onclick="document.querySelectorAll('.is-correct-hidden').forEach(el => el.value = 0); document.getElementById('is_correct_{{ $i }}').value = 1;">
                                         <input type="hidden" name="options[{{ $i }}][is_correct]" id="is_correct_{{ $i }}"
-                                            class="is-correct-hidden" value="{{ $i == 0 ? 1 : 0 }}">
+                                            class="is-correct-hidden" value="{{ $i == 0 ? 1 : 0 }}" :disabled="type !== 'multiple_choice'">
 
                                         <input type="text" name="options[{{ $i }}][option_text]"
                                             placeholder="Option {{ $i + 1 }}"
-                                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full">
+                                            class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm block w-full"
+                                            :required="type === 'multiple_choice'"
+                                            :disabled="type !== 'multiple_choice'">
                                     </div>
                                 @endfor
                             @endif

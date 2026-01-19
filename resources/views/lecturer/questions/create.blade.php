@@ -8,7 +8,8 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100" x-data="{ type: 'multiple_choice' }">
+                <div class="p-6 text-gray-900 dark:text-gray-100"
+                    x-data="{ type: '{{ old('type', 'multiple_choice') }}' }">
                     <form action="{{ route('lecturer.exams.questions.store', $exam->id) }}" method="POST">
                         @csrf
                         <div class="mb-4">
@@ -56,7 +57,8 @@
                                         class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300" {{ $i == 0 ? 'checked' : '' }}
                                         onclick="document.querySelectorAll('.is-correct-hidden').forEach(el => el.value = 0); document.getElementById('is_correct_{{ $i }}').value = 1;">
                                     <input type="hidden" name="options[{{ $i }}][is_correct]" id="is_correct_{{ $i }}"
-                                        class="is-correct-hidden" value="{{ $i == 0 ? 1 : 0 }}">
+                                        class="is-correct-hidden" value="{{ $i == 0 ? 1 : 0 }}"
+                                        :disabled="type !== 'multiple_choice'">
 
                                     <input type="text" name="options[{{ $i }}][option_text]"
                                         placeholder="Option {{ $i + 1 }}"
