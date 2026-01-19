@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, \Spatie\Permission\Traits\HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -44,5 +44,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function classes()
+    {
+        return $this->belongsToMany(SchoolClass::class, 'student_class', 'user_id', 'class_id');
+    }
+
+    public function examAttempts()
+    {
+        return $this->hasMany(ExamAttempt::class);
     }
 }
