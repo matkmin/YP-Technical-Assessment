@@ -24,7 +24,15 @@ class QuestionController extends Controller
         );
 
         if ($request->type === 'multiple_choice') {
-            $question->options()->createMany($request->options);
+            $options = $request->options;
+            $correctIndex = $request->input('correct_option');
+
+            foreach ($options as $key => &$option) {
+                $option['is_correct'] = ($key == $correctIndex);
+            }
+            // re-index options just in case, though createMany handles assoc arrays fine usually?
+            // createMany expects array of arrays.
+            $question->options()->createMany($options);
         }
 
         return redirect()
@@ -44,11 +52,18 @@ class QuestionController extends Controller
         $question->update(
             $request->only(['question_text', 'type', 'points'])
         );
-        
+
         $question->options()->delete();
 
         if ($request->type === 'multiple_choice' && $request->filled('options')) {
-            $question->options()->createMany($request->options);
+            $options = $request->options;
+            $correctIndex = $request->input('correct_option');
+
+            foreach ($options as $key => &$option) {
+                $option['is_correct'] = ($key == $correctIndex);
+            }
+
+            $question->options()->createMany($options);
         }
 
         return redirect()
