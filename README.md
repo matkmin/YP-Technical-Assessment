@@ -1,59 +1,190 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Yayasan Peneraju Exam Online Portal
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a comprehensive Online Examination System built with **Laravel 12** and **Tailwind CSS**. It provides a robust platform for Lecturers to conduct exams and for Students to take them in a secure, timed environment.
 
-## About Laravel
+## 🚀 Key Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### For Lecturers 👨‍🏫
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Dashboard**: Quick overview of system status.
+- **Subject Management**: Create and manage subjects (codes, names).
+- **Class Management**:
+    - Create classes.
+    - Assign specific **Students** to classes.
+    - Assign specific **Subjects** to classes.
+- **Exam Management**:
+    - Create timed exams with specific durations.
+    - Assign exams to specific classes (Access Control).
+    - Toggle Exam visibility (Active/Inactive).
+- **Question Management**:
+    - **Multiple Choice**: Auto-graded. Supports custom points.
+    - **Text Answer**: Manual grading support.
+- **Theme Support**: Built-in Light/Dark mode.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### For Students 👨‍🎓
 
-## Learning Laravel
+- **Dashboard**: View list of exams available to your specific class.
+- **Secure Exam Environment**:
+    - Timer countdown (Auto-submit when time expires).
+    - Validation to prevent re-taking completed exams.
+- **Instant Results**: View score and review answers immediately after submission (for auto-graded sections).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## 🛠️ Tech Stack
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **Framework**: Laravel 12.x
+- **Frontend**: Blade Templates + Tailwind CSS + Alpine.js
+- **Database**: MySQL / MariaDB
+- **Authorization**: Spatie Laravel Permission
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## ⚙️ Installation Guide
 
-### Premium Partners
+Follow these steps to set up the project locally.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 1. Prerequisites
 
-## Contributing
+- PHP 8.2 or higher
+- Composer
+- Node.js & NPM
+- MySQL/MariaDB
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 2. Setup Steps
 
-## Code of Conduct
+```bash
+# 1. Install PHP Dependencies
+composer install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 2. Install Frontend Dependencies
+npm install
 
-## Security Vulnerabilities
+# 3. Setup Environment
+cp .env.example .env
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 4. Generate App Key
+php artisan key:generate
+```
 
-## License
+### 3. Database Setup
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+1. Create a database (e.g., `yp_exam_portal`) in your MySQL client.
+2. Update `.env` file with your credentials:
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=yp_exam_portal
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+3. Run Migrations & Seeders (This sets up the roles and default users):
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+### 4. Build Assets
+
+```bash
+# For development (Hot Reloading)
+npm run dev
+
+# OR for production
+npm run build
+```
+
+### 5. Run Server
+
+```bash
+php artisan serve
+```
+
+Visit `http://127.0.0.1:8000` in your browser.
+
+---
+
+## 🔑 Default Credentials
+
+The `DatabaseSeeder` creates the following default accounts for testing:
+
+| Role         | Email                  | Password   |
+| ------------ | ---------------------- | ---------- |
+| **Lecturer** | `lecturer@example.com` | `password` |
+| **Student**  | `student@example.com`  | `password` |
+
+---
+
+## 📝 Usage Walkthrough
+
+### Lecturer Flow
+
+1. Login as **Lecturer**.
+2. Go to **Manage Subjects** -> Create "Mathematics".
+3. Go to **Manage Classes** -> Create "Class A" -> Assign yourself or students to it.
+4. Go to **Manage Exams** -> Create "Mid-Term Exam".
+5. Click **Manage** on the exam -> Add Questions (MCQ or Text).
+6. Assign the Exam to "Class A".
+7. Set status to **Active** when ready.
+
+### Student Flow
+
+1. Login as **Student**.
+2. Dashboard shows list of assigned exams.
+3. Click **Start Exam**.
+4. Answer questions within the time limit.
+5. Click **Submit** or wait for timer to zero out.
+6. View Results.
+
+---
+
+## 🐳 Docker Setup
+
+If you prefer using Docker, follow these steps to run the application in a containerized environment.
+
+### 1. Configure Environment
+
+Update your `.env` file to point to the Docker database service. **Note:** You might want to create a `.env.docker` file or modify `.env` temporarily.
+
+```env
+DB_CONNECTION=mysql
+DB_HOST=exam-online-mysql
+DB_PORT=3306
+DB_DATABASE=yp_exam_portal
+DB_USERNAME=root
+DB_PASSWORD=your_password  # Ensure this matches docker-compose.yml (default is empty in your file if using specific vars)
+```
+
+### 2. Start Services
+
+Run the following command to build and start the containers:
+
+```bash
+docker-compose up -d --build
+```
+
+### 3. Install Dependencies
+
+Since the code is mounted as a volume, you need to install dependencies inside the container:
+
+```bash
+# Install PHP dependencies
+docker-compose exec exam-online-system composer install
+
+# Install Node dependencies and build assets
+docker-compose exec exam-online-system npm install
+docker-compose exec exam-online-system npm run build
+```
+
+### 4. Setup Database
+
+Run the migrations and seeders inside the container:
+
+```bash
+docker-compose exec exam-online-system php artisan migrate:fresh --seed
+```
+
+### 5. Access Application
+
+The application will be available at: **http://localhost:8001**
