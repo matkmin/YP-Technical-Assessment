@@ -1,0 +1,56 @@
+services:
+  exam-online-system:
+    build:
+      context: .
+      dockerfile: docker/DockerFile
+    image: exam-online:latest
+    container_name: "exam-online-system"
+    ports:
+      - 5173:5173
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - exam-online-network
+    volumes:
+      - ".:/var/www/html"
+      - "./docker/php.ini:/usr/local/etc/php/conf.d/php.ini"
+
+  nginx:
+    image: nginx:alpine
+    container_name: exam-online-nginx
+    restart: unless-stopped
+    ports:
+      - 8001:80
+    working_dir: "/var/www/html"
+    volumes:
+      - ".:/var/www/html"
+      - "./docker/nginx.conf:/etc/nginx/conf.d/default.conf"
+    networks:
+      - exam-online-network
+    depends_on:
+      - exam-online-system
+
+  mysql:
+    image: mysql:8.0
+    container_name: exam-online-mysql
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    volumes:
+      - "vol-exam-online-mysql:/var/lib/mysql"
+    environment:
+      MARIADB_ROOT_PASSWORD: "${DB_PASSWORD}"
+      MARIADB_DATABASE: "${DB_DATABASE}"
+      MARIADB_USER: "${DB_USERNAME}"
+      MARIADB_PASSWORD: "${DB_PASSWORD}"
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"
+    networks:
+      - exam-online-network
+
+networks:
+  exam-online-network:
+    driver: bridge
+volumes:
+  vol-exam-online-mysql:
+    driver: local
