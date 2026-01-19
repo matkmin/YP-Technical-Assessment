@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Subject;
+use App\Models\Question;
+use App\Models\ExamAttempt;
+use App\Models\SchoolClass;
 use Illuminate\Database\Eloquent\Model;
 
 class Exam extends Model
@@ -27,5 +31,18 @@ class Exam extends Model
     public function attempts()
     {
         return $this->hasMany(ExamAttempt::class);
+    }
+    
+    public function scopeForStudent($query, $user)
+    {
+        return $query
+            ->where('is_active', true)
+            ->whereHas('classes', fn ($q) =>
+                $q->whereIn('classes.id', $user->classes()->pluck('classes.id'))
+            )
+            ->with([
+                'subject',
+                'attempts' => fn ($q) => $q->where('user_id', $user->id),
+            ]);
     }
 }

@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Services\ExamSubmissionService;
+use App\Http\Requests\SubmitExamRequest;
+use App\Models\Exam;
 
 class ExamController extends Controller
 {
@@ -70,60 +73,16 @@ class ExamController extends Controller
         return redirect()->route('student.exams.show', $exam->id);
     }
 
-    public function submit(\Illuminate\Http\Request $request, \App\Models\Exam $exam)
+    public function submit(SubmitExamRequest $request, Exam $exam, ExamSubmissionService $submissionService)
     {
         $user = auth()->user();
         $attempt = $exam->attempts()->where('user_id', $user->id)->whereNull('completed_at')->firstOrFail();
 
-        // Validate time (backend check)
-        $startTime = $attempt->started_at;
-        // Allow 1 minute buffer for network latency
-        $maxEndTime = $startTime->copy()->addMinutes($exam->duration_minutes)->addMinutes(1);
-
-        if (now()->greaterThan($maxEndTime)) {
-            $attempt->update(['completed_at' => $startTime->addMinutes($exam->duration_minutes)]); // Set to max time
-            return redirect()->route('student.exams.show', $exam->id)->with('error', 'Submission rejected. Time limit exceeded.');
+        try {
+            $submissionService->submit($exam, $attempt, $request->input('answers', []));
+            return redirect()->route('student.exams.show', $exam->id)->with('success', 'Exam submitted successfully.');
+        } catch (\Exception $e) {
+            return redirect()->route('student.exams.show', $exam->id)->with('error', $e->getMessage());
         }
-
-        // Save Answers
-        // Request: answers[question_id] = option_id (for MC) or text (for Text)
-        // Simple mapping: answers[question_id] => value
-
-        $answers = $request->input('answers', []);
-        $score = 0;
-        $totalPoints = 0; // Only calculate for MCQs or auto-gradable.
-
-        foreach ($answers as $questionId => $answerValue) {
-            $question = $exam->questions()->find($questionId);
-            if (!$question)
-                continue;
-
-            if ($question->type === 'multiple_choice') {
-                $option = $question->options()->find($answerValue); // answerValue is option_id
-                $isCorrect = $option && $option->is_correct;
-                if ($isCorrect) {
-                    $score += $question->points;
-                }
-
-                $attempt->answers()->create([
-                    'question_id' => $question->id,
-                    'option_id' => $answerValue,
-                ]);
-            } else {
-                // Text answer
-                $attempt->answers()->create([
-                    'question_id' => $question->id,
-                    'answer_text' => $answerValue,
-                ]);
-                // Text answers need manual grading usually, score remains 0 for this question for now.
-            }
-        }
-
-        $attempt->update([
-            'completed_at' => now(),
-            'score' => $score,
-        ]);
-
-        return redirect()->route('student.exams.show', $exam->id)->with('success', 'Exam submitted successfully.');
     }
 }

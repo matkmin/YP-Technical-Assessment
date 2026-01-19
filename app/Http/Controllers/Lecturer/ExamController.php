@@ -3,89 +3,101 @@
 namespace App\Http\Controllers\Lecturer;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Http\Requests\StoreExamRequest;
+use App\Http\Requests\UpdateExamRequest;
+use App\Http\Requests\AttachClassRequest;
+use App\Models\Exam;
+use App\Models\Subject;
+use App\Models\SchoolClass;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class ExamController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function __construct(
+        protected Exam $exams,
+        protected Subject $subjects,
+        protected SchoolClass $classes
+    ) {
+    }
+
+    public function index(): View
     {
-        $exams = \App\Models\Exam::with(['subject'])->withCount(['questions', 'classes'])->latest()->get();
+        $exams = $this->exams
+            ->with('subject')
+            ->withCount(['questions', 'classes'])
+            ->latest()
+            ->get();
+
         return view('lecturer.exams.index', compact('exams'));
     }
 
-    public function create()
+    public function create(): View
     {
-        $subjects = \App\Models\Subject::all();
+        $subjects = $this->subjects->all();
+
         return view('lecturer.exams.create', compact('subjects'));
     }
 
-    public function store(\Illuminate\Http\Request $request)
+    public function store(StoreExamRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'subject_id' => 'required|exists:subjects,id',
-            'duration_minutes' => 'required|integer|min:1',
-            'is_active' => 'boolean',
-        ]);
+        $this->exams->create($request->validated());
 
-        $validated['is_active'] = $request->has('is_active');
-
-        \App\Models\Exam::create($validated);
-
-        return redirect()->route('lecturer.exams.index')->with('success', 'Exam created successfully.');
+        return redirect()
+            ->route('lecturer.exams.index')
+            ->with('success', 'Exam created successfully.');
     }
 
-    public function show(\App\Models\Exam $exam)
+    public function show(Exam $exam): View
     {
         $exam->load(['questions.options', 'classes']);
-        $allClasses = \App\Models\SchoolClass::whereDoesntHave('exams', function ($q) use ($exam) {
-            $q->where('exams.id', $exam->id);
-        })->get();
+
+        $allClasses = $this->classes
+            ->whereDoesntHave(
+                'exams',
+                fn($q) =>
+                $q->where('exams.id', $exam->id)
+            )->get();
 
         return view('lecturer.exams.show', compact('exam', 'allClasses'));
     }
 
-    public function edit(\App\Models\Exam $exam)
+    public function edit(Exam $exam): View
     {
-        $subjects = \App\Models\Subject::all();
+        $subjects = $this->subjects->all();
+
         return view('lecturer.exams.edit', compact('exam', 'subjects'));
     }
 
-    public function update(\Illuminate\Http\Request $request, \App\Models\Exam $exam)
+    public function update(UpdateExamRequest $request, Exam $exam): RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'subject_id' => 'required|exists:subjects,id',
-            'duration_minutes' => 'required|integer|min:1',
-            'is_active' => 'boolean',
-        ]);
+        $exam->update($request->validated());
 
-        $validated['is_active'] = $request->has('is_active'); // handle checkbox
-
-        $exam->update($validated);
-
-        return redirect()->route('lecturer.exams.index')->with('success', 'Exam updated successfully.');
+        return redirect()
+            ->route('lecturer.exams.index')
+            ->with('success', 'Exam updated successfully.');
     }
 
-    public function destroy(\App\Models\Exam $exam)
+    public function destroy(Exam $exam): RedirectResponse
     {
         $exam->delete();
-        return redirect()->route('lecturer.exams.index')->with('success', 'Exam deleted successfully.');
+
+        return redirect()
+            ->route('lecturer.exams.index')
+            ->with('success', 'Exam deleted successfully.');
     }
 
-    public function attachClass(\Illuminate\Http\Request $request, \App\Models\Exam $exam)
+    public function attachClass(AttachClassRequest $request, Exam $exam): RedirectResponse
     {
-        $request->validate(['class_id' => 'required|exists:classes,id']);
         $exam->classes()->attach($request->class_id);
+
         return back()->with('success', 'Exam assigned to class.');
     }
 
-    public function detachClass(\App\Models\Exam $exam, \App\Models\SchoolClass $class)
+    public function detachClass(Exam $exam, SchoolClass $class): RedirectResponse
     {
         $exam->classes()->detach($class->id);
+
         return back()->with('success', 'Exam unassigned from class.');
     }
 }

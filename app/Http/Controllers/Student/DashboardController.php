@@ -2,26 +2,15 @@
 
 namespace App\Http\Controllers\Student;
 
-use App\Http\Controllers\Controller;
+use App\Models\Exam;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
-        $classIds = $user->classes()->pluck('classes.id');
-
-        $exams = \App\Models\Exam::where('is_active', true)
-            ->whereHas('classes', function ($q) use ($classIds) {
-                $q->whereIn('classes.id', $classIds);
-            })
-            ->with([
-                'subject',
-                'attempts' => function ($q) use ($user) {
-                    $q->where('user_id', $user->id);
-                }
-            ])
+        $exams = Exam::forStudent(auth()->user())
             ->latest()
             ->get();
 
