@@ -29,6 +29,26 @@ This is a comprehensive Online Examination System built with **Laravel 12** and 
     - Validation to prevent re-taking completed exams.
 - **Instant Results**: View score and review answers immediately after submission (for auto-graded sections).
 
+## � Screenshots
+
+### Authentication & Dashboards
+
+|           Login Page            |                    Lecturer Dashboard                    |                    Student Dashboard                    |
+| :-----------------------------: | :------------------------------------------------------: | :-----------------------------------------------------: |
+| ![Login](screenshots/login.png) | ![Lecturer Dashboard](screenshots/lecture-dashboard.png) | ![Student Dashboard](screenshots/student-dashboard.png) |
+
+### Lecturer Management
+
+|               Manage Subjects               |              Manage Classes              |             Manage Exams              |
+| :-----------------------------------------: | :--------------------------------------: | :-----------------------------------: |
+| ![Subjects](screenshots/manage-subject.png) | ![Classes](screenshots/manage-class.png) | ![Exams](screenshots/manage-exam.png) |
+
+### Student Exam & Results
+
+|              Exam Result               |
+| :------------------------------------: |
+| ![Result](screenshots/exam-result.png) |
+
 ## 🛠️ Tech Stack
 
 - **Framework**: Laravel 12.x
